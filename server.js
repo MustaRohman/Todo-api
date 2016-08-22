@@ -7,14 +7,17 @@ var app = express();
 
 var PORT = process.env.PORT || 3000;
 var todos = [];
-var categories = [];
+var journals = [];
 var todoNextId = 1;
+var journalId = 1;
 
 app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
 	res.send('Todo API root');
 });
+
+// ------ TODOS ------
 
 // GET /todos?completed=true&q=work
 app.get('/todos', function (req, res) {
@@ -107,11 +110,33 @@ app.put('/todos/:id', function (req, res) {
 
 })
 
-// POST /categories
-app.post('/categories', function (req, res) {
-	var body = req.body;
-	categories.push(body);
-	console.log(categories);
+// ------- JOURNALS -------
+
+app.get('/journals', function (req, res) {
+	res.json(journals);
+})
+
+app.get('/journals/:id', function (req, res) {
+	var journalId = parseInt(req.params.id, 10);
+	var matchedJournal = _.findWhere(journals, {id: journalId});
+
+	if (matchedJournal) {
+		res.json(matchedJournal);
+	} else {
+		res.status(404).send();
+	}	
+})
+
+app.post('/journals', function (req, res) {
+	var body = _.pick(req.body, 'name', 'text');
+
+	if (!_.isString(body.name) || !_.isString(body.text) || body.name.trim().length === 0 
+		|| body.text.trim().length === 0) {
+		return res.status(404).send();
+	}
+
+	body.id = journalId++;
+	journals.push(body);
 	res.json(body);
 })
 
