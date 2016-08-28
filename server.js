@@ -141,7 +141,13 @@ app.post('/users/login', function(req, res) {
 	var body = _.pick(req.body, 'email', 'password');
 
 	db.user.authenticate(body).then(function(user) {
-		res.json(user.toPublicJSON());
+		var token = user.generateToken('authenticate');
+		if (token) {
+			res.header('Auth', token).json(user.toPublicJSON());
+		} else {
+			res.status(401).send();
+		}
+
 	}, function(e) {
 		res.status(401).send();
 	})
@@ -157,7 +163,9 @@ app.post('/users/login', function(req, res) {
 // 	res.json(body);
 // })
 
-db.sequelize.sync({force:true}).then(function() { //sync creates any missing tables
+db.sequelize.sync({
+	force: true
+}).then(function() { //sync creates any missing tables
 	app.listen(PORT, function() {
 		console.log('Express listening on port ' + PORT + '!');
 	});
