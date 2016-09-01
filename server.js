@@ -74,7 +74,6 @@ app.get('/todos/:id', middleware.requireAuthentication, function(req, res) {
 app.post('/todos', middleware.requireAuthentication, function(req, res) {
 	var body = _.pick(req.body, 'description', 'completed');
 
-
 	db.todo.create(body).then(function(todo) {
 		req.user.addTodo(todo).then(function() {
 			return todo.reload();
@@ -184,7 +183,7 @@ app.post('/users/login', function(req, res) {
 // })
 
 db.sequelize.sync({
-	// force: true
+	force: true
 }).then(function() { //sync creates any missing tables
 	app.listen(PORT, function() {
 		console.log('Express listening on port ' + PORT + '!');
