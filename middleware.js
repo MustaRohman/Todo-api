@@ -13,7 +13,7 @@ module.exports = function(db) {
 			//Then we check to see if the token is linked to a user 
 			db.token.findOne({
 				where: {
-					tokenHash: cryptojs.MD5(token).toString()
+					tokenHash: cryptojs.SHA1(token).toString()
 				}
 			}).then(function(tokenInstance) {
 				if (!tokenInstance) {
