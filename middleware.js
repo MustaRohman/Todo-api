@@ -8,9 +8,12 @@ module.exports = function(db) {
 		requireAuthentication: function(req, res, next) {
 			var token = req.get('Auth') || '';
 
+			//token table is basically for users currently logged in
+			//First we look to see if the token is valid
+			//Then we check to see if the token is linked to a user 
 			db.token.findOne({
 				where: {
-					tokenHash: cryptojs.MD5(token).toString()
+					tokenHash: cryptojs.SHA1(token).toString()
 				}
 			}).then(function(tokenInstance) {
 				if (!tokenInstance) {
